@@ -4,12 +4,7 @@ import { GithubController } from './github.controller';
 import { GithubService } from './github.service';
 
 @Module({
-  imports: [
-    HttpModule.register({
-      timeout: 5000,
-      maxRedirects: 5,
-    }),
-  ],
+  imports: [HttpModule],
   controllers: [GithubController],
   providers: [GithubService],
 })
