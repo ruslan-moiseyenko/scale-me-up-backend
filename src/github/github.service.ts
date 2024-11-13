@@ -30,6 +30,7 @@ export class GithubService {
   }
   async searchRepositories(
     params: GithubSearchResponseDto,
+    token?: string,
   ): Promise<GithubSearchResponse> {
     try {
       const { data } = await firstValueFrom(
@@ -38,6 +39,7 @@ export class GithubService {
             params,
             headers: {
               Accept: 'application/vnd.github+json',
+              ...(token && { Authorization: `Bearer ${token}` }),
             },
           })
           .pipe(
@@ -61,6 +63,22 @@ export class GithubService {
             }),
           ),
       );
+
+      if (token) {
+        const repositoriesWithStarred = await Promise.all(
+          data.items.map(async (repo) => ({
+            ...repo,
+            isStarred: await this.isRepositoryStarred(
+              repo.owner.login,
+              repo.name,
+              token,
+            ),
+          })),
+        );
+        data.items = repositoriesWithStarred;
+      } else {
+        data.items = data.items.map((repo) => ({ ...repo, isStarred: false }));
+      }
 
       return data;
     } catch (error) {
@@ -186,15 +204,6 @@ export class GithubService {
     repo: string,
     token: string,
   ): Promise<void> {
-    const isStarred = await this.isRepositoryStarred(owner, repo, token);
-
-    if (!isStarred) {
-      throw new HttpException(
-        'Repository is not starred',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
     try {
       await firstValueFrom(
         this.httpService

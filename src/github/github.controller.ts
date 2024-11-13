@@ -34,8 +34,10 @@ export class GithubController {
   @ApiResponse({ status: 403, description: 'API rate limit exceeded' })
   async searchRepositories(
     @Query() searchParams: GithubSearchResponseDto,
+    @Headers('authorization') authHeader?: string,
   ): Promise<GithubSearchResponseDto> {
-    return this.githubService.searchRepositories(searchParams);
+    const token = authHeader ? authHeader.replace('Bearer ', '') : undefined;
+    return this.githubService.searchRepositories(searchParams, token);
   }
 
   @Get('repositories/:owner/:repo/starred')
