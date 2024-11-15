@@ -16,7 +16,10 @@ import {
   ApiHeader,
   ApiParam,
 } from '@nestjs/swagger';
-import { GithubSearchResponseDto } from 'src/github/dto/search-repositories.dto';
+import {
+  GithubSearchResponseDto,
+  SearchRepositoriesDto,
+} from 'src/github/dto/search-repositories.dto';
 
 @Controller('github')
 @ApiTags('GitHub')
@@ -33,7 +36,7 @@ export class GithubController {
   @ApiResponse({ status: 422, description: 'Invalid search query parameters' })
   @ApiResponse({ status: 403, description: 'API rate limit exceeded' })
   async searchRepositories(
-    @Query() searchParams: GithubSearchResponseDto,
+    @Query() searchParams: SearchRepositoriesDto,
     @Headers('authorization') authHeader?: string,
   ): Promise<GithubSearchResponseDto> {
     const token = authHeader ? authHeader.replace('Bearer ', '') : undefined;

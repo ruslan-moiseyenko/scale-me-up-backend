@@ -9,7 +9,7 @@ import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
 import { GithubSearchResponse } from 'src/interfaces/github-repository.interface';
-import { GithubSearchResponseDto } from 'src/github/dto/search-repositories.dto';
+import { SearchRepositoriesDto } from 'src/github/dto/search-repositories.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @Injectable()
@@ -29,7 +29,7 @@ export class GithubService {
     return `starred:${token}:${owner}/${repo}`;
   }
   async searchRepositories(
-    params: GithubSearchResponseDto,
+    params: SearchRepositoriesDto,
     token?: string,
   ): Promise<GithubSearchResponse> {
     try {
